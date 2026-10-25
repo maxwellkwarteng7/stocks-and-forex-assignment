@@ -137,11 +137,6 @@ function DataStatus({ board, quotes }: { board: BoardPayload; quotes: QuotesPayl
                 ))}
               </dd>
             </div>
-            <div className="border-t border-line pt-3 text-muted">
-              Free tier: 25 Alpha Vantage requests/day. This server has made{" "}
-              <span className="tabular font-mono text-ink-2">{board.budget.usedToday}</span> today; everything else is
-              served from cache.
-            </div>
           </dl>
       </div>
     </div>
