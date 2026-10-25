@@ -134,3 +134,120 @@ body {
   scrollbar-color: var(--axis) transparent;
 }
 
+
+/* d3 axis styling: thin quiet lines and muted numbers that line up */
+.axis path,
+.axis line {
+  stroke: var(--axis);
+  shape-rendering: crispEdges;
+}
+.axis text {
+  fill: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+}
+.gridlines line {
+  stroke: var(--grid);
+  shape-rendering: crispEdges;
+}
+.gridlines path {
+  display: none;
+}
+
+/* motion curves. ease-out starts fast so it feels instant when the user clicks */
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+/* click feedback for buttons: colour and a slight dim, nothing scales */
+.press {
+  transition:
+    opacity 120ms ease,
+    background-color 150ms ease,
+    color 150ms ease,
+    border-color 150ms ease;
+}
+.press:active {
+  opacity: 0.7;
+}
+
+/* sidebar rows: the highlight moves on the same 240ms timing as the selection bar */
+.row-select {
+  transition:
+    background-color 240ms var(--ease-out),
+    box-shadow 240ms var(--ease-out),
+    color 240ms var(--ease-out);
+}
+
+/* popovers just fade. visibility waits for the fade to finish before hiding it */
+.popover {
+  transition:
+    opacity 150ms var(--ease-out),
+    visibility 0s linear 150ms;
+}
+.popover[data-open="false"] {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.popover[data-open="true"] {
+  transition-delay: 0s;
+}
+
+/* rolling digits on the big headline price */
+.roll {
+  display: inline-block;
+  height: 1em;
+  overflow: hidden;
+  line-height: 1;
+}
+.roll > span {
+  display: flex;
+  flex-direction: column;
+  transition: transform 420ms var(--ease-out);
+}
+
+/* shimmer while a chart is loading */
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--grid) 50%, var(--surface-2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* a quick green or red flash when a live price moves */
+@keyframes flash-up {
+  from {
+    background-color: color-mix(in srgb, var(--up) 22%, transparent);
+  }
+}
+@keyframes flash-down {
+  from {
+    background-color: color-mix(in srgb, var(--down) 22%, transparent);
+  }
+}
+.flash-up {
+  animation: flash-up 1.2s ease-out;
+}
+.flash-down {
+  animation: flash-down 1.2s ease-out;
+}
+
+/* people who turn on reduced motion in their OS get none of the decorative movement */
+@media (prefers-reduced-motion: reduce) {
+  .flash-up,
+  .flash-down,
+  .skeleton {
+    animation: none;
+  }
+  .roll > span,
+  .slide-indicator {
+    transition: none !important;
+  }
+}
