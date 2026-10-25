@@ -49,7 +49,7 @@ export function Dashboard({ initialBoard, initialQuotes, initialSelected, initia
     return map;
   }, [quotes, boardMap]);
 
-  // keep the url shareable: ?s=NVDA&r=1Y
+  // keeping the url shareable: ?s=NVDA&r=1Y
   useEffect(() => {
     const url = new URL(window.location.href);
     url.searchParams.set("s", selected);
@@ -81,9 +81,7 @@ export function Dashboard({ initialBoard, initialQuotes, initialSelected, initia
           />
           <CrossMarket board={boardMap} range={range} />
           <footer className="px-4 py-6 text-[11px] leading-relaxed text-muted md:px-6">
-            Stock quotes: Finnhub (real time, US). History and FX: Alpha Vantage (end of day; weekly stock history is
-            split-adjusted). When a provider is unavailable the dashboard shows recorded data and says so. Not
-            investment advice.
+            Stocks and forex assignment footer . 
           </footer>
         </main>
       </div>

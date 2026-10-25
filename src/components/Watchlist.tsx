@@ -20,17 +20,14 @@ interface Props {
   onSelect: (id: string) => void;
 }
 
-/** rows are 62px so this leaves 10px top and bottom */
+
 const BAR_H = 42;
 const SLIDE_MS = 240;
 
 export function Watchlist({ board, prices, selected: committed, onSelect: commit }: Props) {
-  // the list updates straight away but the main panel waits for the bar to land,
-  // otherwise the chart redraw makes the slide stutter
   const [selected, setSelected] = useState(committed);
   const [seen, setSeen] = useState(committed);
   if (committed !== seen) {
-    // selection changed from outside, like the back button
     setSeen(committed);
     setSelected(committed);
   }
@@ -48,7 +45,7 @@ export function Watchlist({ board, prices, selected: committed, onSelect: commit
   const placed = useRef(false);
   const selectedRef = useRef(selected);
 
-  // we move the bar straight in the DOM and only animate transform so it stays smooth
+  //I'm moving the bar to the  DOM and only animate transform so it stays smooth
   const place = (animate: boolean) => {
     const nav = navRef.current;
     const bar = barRef.current;
@@ -67,7 +64,7 @@ export function Watchlist({ board, prices, selected: committed, onSelect: commit
     placed.current = true;
   });
 
-  // one observer for the whole lifetime, a new one fires straight away and cuts the slide short
+ 
   useEffect(() => {
     const nav = navRef.current;
     if (!nav) return;
@@ -81,7 +78,7 @@ export function Watchlist({ board, prices, selected: committed, onSelect: commit
     return () => ro.disconnect();
   }, []);
 
-  // no smooth scroll for arrow keys, people press them too fast
+
   const onKeyDown = (e: KeyboardEvent<HTMLElement>) => {
     if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
     e.preventDefault();
@@ -102,7 +99,7 @@ export function Watchlist({ board, prices, selected: committed, onSelect: commit
         ref={barRef}
         aria-hidden
         style={{ height: BAR_H }}
-        className="slide-indicator pointer-events-none absolute left-1 top-0 hidden w-[3px] rounded-full will-change-transform bg-accent opacity-0 lg:block"
+        className="slide-indicator pointer-events-none absolute left-1 top-0 hidden w-0.75 rounded-full will-change-transform bg-accent opacity-0 lg:block"
       />
       <Group title="Equities" note="Live" items={STOCKS} {...{ board, prices, selected, onSelect }} />
       <Group title="Forex" note="End of day" items={FX_PAIRS} {...{ board, prices, selected, onSelect }} />

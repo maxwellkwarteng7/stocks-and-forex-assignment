@@ -59,7 +59,8 @@ export function MainPanel({ inst, daily, quote, range, onRange }: Props) {
     hintTimer.current = setTimeout(() => setZoomHint(false), 1400);
   }, []);
   const [view, setView] = useState<[number, number] | null>(null);
-  // key the zoom by what's on screen, not what's loading. this was the TSLA crash
+
+  
   const viewKey = `${series?.id}.${series?.interval}.${range}`;
 
   const stats = useMemo(() => {
@@ -242,7 +243,6 @@ function formatTradeTime(t: number): string {
 function InstrumentMark({ inst, logo }: { inst: Instrument; logo: string | null }) {
   if (logo) {
     return (
-      // eslint-disable-next-line @next/next/no-img-element
       <img src={logo} alt="" width={44} height={44} className="h-11 w-11 shrink-0 rounded-xl object-cover ring-1 ring-line" />
     );
   }
@@ -267,7 +267,7 @@ function RollingNumber({ text }: { text: string }) {
     <span className="tabular inline-flex">
       <span className="sr-only">{text}</span>
       {chars.map((ch, i) => {
-        const key = chars.length - i; // counted from the right so units stay in the units column
+        const key = chars.length - i; 
         if (!/\d/.test(ch)) {
           return (
             <span key={key} aria-hidden>
@@ -365,7 +365,7 @@ function BarTable({ bars, inst }: { bars: SeriesPayload["bars"]; inst: Instrumen
   const rows = [...bars].reverse();
   const p = (v: number) => formatPrice(v, inst.decimals);
   return (
-    <div className="mt-3 max-h-[400px] overflow-auto rounded-lg border border-line">
+    <div className="mt-3 max-h-100 overflow-auto rounded-lg border border-line">
       <table className="w-full text-xs">
         <caption className="sr-only">{inst.label} price history for the visible window</caption>
         <thead className="sticky top-0 bg-surface text-muted">

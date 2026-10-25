@@ -15,9 +15,7 @@ export default function Page({ searchParams }: PageProps<"/">) {
   );
 }
 
-// fetch on the server for the first paint, then the browser polls the same functions through /api
 async function Board({ searchParams }: Pick<PageProps<"/">, "searchParams">) {
-  // never pre-build this, the data changes per request
   await connection();
   const params = await searchParams;
   const s = typeof params.s === "string" ? params.s : "";
@@ -47,7 +45,7 @@ function BoardSkeleton() {
         </div>
         <div className="flex-1 space-y-4 p-6">
           <div className="h-12 w-1/3 animate-pulse rounded-lg bg-surface-2" />
-          <div className="h-[420px] animate-pulse rounded-lg bg-surface-2" />
+          <div className="h-105 animate-pulse rounded-lg bg-surface-2" />
         </div>
       </div>
     </div>
