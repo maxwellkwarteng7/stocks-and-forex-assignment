@@ -1,11 +1,6 @@
-// records the bundled snapshot data from Alpha Vantage. run it with:
-//
-//   npm run snapshot
-//
-// it fetches daily and weekly history for every instrument, one request every 13 seconds
-// because the free tier only allows 5 a minute, and saves them into src/data/snapshot.
-// anything already in the dev cache from the last 20 hours is reused, and if we hit the
-// daily limit halfway we keep the old files so we can just run it again tomorrow
+// refreshes the bundled snapshot, run it with `npm run snapshot`.
+// one request every 13s because the free tier allows 5 a minute.
+// if we hit the daily limit we keep the old files and run it again tomorrow
 
 import { readFileSync } from "node:fs";
 import { mkdir, writeFile } from "node:fs/promises";
@@ -52,7 +47,7 @@ async function main() {
         lastRequestAt = Date.now();
         const body = await (await fetch(buildAlphaVantageUrl(inst, interval, apiKey))).json();
         try {
-          parseAlphaVantageSeries(body); // check it's real data first so we never cache a refusal
+          parseAlphaVantageSeries(body); // make sure it is real data before we cache it
           await writeRaw(key, body);
           entry = { savedAt: Date.now(), body };
         } catch (err) {
@@ -62,7 +57,7 @@ async function main() {
         }
       }
       if (!entry) {
-        skipped.push(key); // keep the snapshot file we already have
+        skipped.push(key);
         continue;
       }
 
