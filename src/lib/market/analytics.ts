@@ -2,7 +2,7 @@
 
 import type { Bar } from "./types.ts";
 
-// simple moving average. we keep a running sum instead of re-adding the whole window
+// running sum so we don't re-add the whole window every time
 export function sma(values: readonly number[], period: number): (number | null)[] {
   const out: (number | null)[] = new Array(values.length).fill(null);
   let sum = 0;
@@ -14,7 +14,7 @@ export function sma(values: readonly number[], period: number): (number | null)[
   return out;
 }
 
-// exponential moving average, gives recent prices more weight. we start it off with the sma of the first window
+// ema weights recent prices more, we seed it with the sma of the first window
 export function ema(values: readonly number[], period: number): (number | null)[] {
   const out: (number | null)[] = new Array(values.length).fill(null);
   if (values.length < period) return out;
@@ -34,7 +34,7 @@ export interface Band {
   lower: number;
 }
 
-// bollinger bands: the sma with a band k standard deviations above and below it
+// the sma with a band k standard deviations either side
 export function bollinger(values: readonly number[], period = 20, k = 2): (Band | null)[] {
   const mids = sma(values, period);
   return mids.map((mid, i) => {
@@ -46,7 +46,7 @@ export function bollinger(values: readonly number[], period = 20, k = 2): (Band 
   });
 }
 
-// % change from one bar to the next, so the result is one item shorter than the input
+// one item shorter than the input
 export function returns(values: readonly number[]): number[] {
   const out: number[] = [];
   for (let i = 1; i < values.length; i++) out.push(values[i] / values[i - 1] - 1);
@@ -78,7 +78,6 @@ export function pearson(a: readonly number[], b: readonly number[]): number {
   return va === 0 || vb === 0 ? Number.NaN : cov / Math.sqrt(va * vb);
 }
 
-
 export function correlationMatrix(series: readonly (readonly Bar[])[]): number[][] {
   const dateSets = series.map((bars) => new Set(bars.map((b) => b.t)));
   const shared = series[0]?.map((b) => b.t).filter((t) => dateSets.every((s) => s.has(t))) ?? [];
@@ -90,7 +89,7 @@ export function correlationMatrix(series: readonly (readonly Bar[])[]): number[]
   return rets.map((a, i) => rets.map((b, j) => (i === j ? 1 : pearson(a, b))));
 }
 
-// turns prices into % change from a starting date so different instruments can share one chart
+// % change from a start date so different instruments can share one chart
 export function rebase(bars: readonly Bar[], fromT: number): { t: number; pct: number }[] {
   const start = bars.findIndex((b) => b.t >= fromT);
   if (start === -1) return [];
@@ -108,7 +107,6 @@ export interface RangeStats {
   volatilityPct: number;
 }
 
-// the numbers in the stats strip above the chart, for whatever window is on screen
 export function rangeStats(bars: readonly Bar[], periodsPerYear: number): RangeStats | null {
   if (bars.length < 2) return null;
   const closes = bars.map((b) => b.c);
@@ -124,7 +122,7 @@ export function rangeStats(bars: readonly Bar[], periodsPerYear: number): RangeS
     changePct: (last / first - 1) * 100,
     high: Math.max(...bars.map((b) => b.h)),
     low: Math.min(...bars.map((b) => b.l)),
-    // daily volatility x square root of 252 trading days gives the yearly figure
+    // daily volatility x √252 trading days gives the yearly number
     volatilityPct: sd * Math.sqrt(periodsPerYear) * 100,
   };
 }

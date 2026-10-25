@@ -1,69 +1,55 @@
-import Image from "next/image";
+import { connection } from "next/server";
+import { Suspense } from "react";
+import { Dashboard } from "@/components/Dashboard";
+import { getInstrument } from "@/lib/market/instruments";
+import { isRangeKey } from "@/lib/market/ranges";
+import { alphaVantageBudget } from "@/lib/server/alphaVantageQueue";
+import { getQuotes } from "@/lib/server/quotes";
+import { getBoard } from "@/lib/server/series";
 
-export default function Home() {
+export default function Page({ searchParams }: PageProps<"/">) {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-surface-2 font-sans">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-surface sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <Suspense fallback={<BoardSkeleton />}>
+      <Board searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+// fetch on the server for the first paint, then the browser polls the same functions through /api
+async function Board({ searchParams }: Pick<PageProps<"/">, "searchParams">) {
+  // never pre-build this, the data changes per request
+  await connection();
+  const params = await searchParams;
+  const s = typeof params.s === "string" ? params.s : "";
+  const r = typeof params.r === "string" ? params.r : "";
+
+  const [series, quotes] = await Promise.all([getBoard(), getQuotes()]);
+
+  return (
+    <Dashboard
+      initialBoard={{ series, budget: alphaVantageBudget() }}
+      initialQuotes={quotes}
+      initialSelected={getInstrument(s)?.id ?? "AAPL"}
+      initialRange={isRangeKey(r) ? r : "3M"}
+    />
+  );
+}
+
+function BoardSkeleton() {
+  return (
+    <div className="flex min-h-screen flex-col" aria-busy="true">
+      <div className="h-14 border-b border-line" />
+      <div className="flex flex-1">
+        <div className="hidden w-[320px] space-y-2 border-r border-line p-4 lg:block">
+          {Array.from({ length: 10 }, (_, i) => (
+            <div key={i} className="h-12 animate-pulse rounded-lg bg-surface-2" />
+          ))}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="flex-1 space-y-4 p-6">
+          <div className="h-12 w-1/3 animate-pulse rounded-lg bg-surface-2" />
+          <div className="h-[420px] animate-pulse rounded-lg bg-surface-2" />
         </div>
-      </main>
+      </div>
     </div>
   );
 }

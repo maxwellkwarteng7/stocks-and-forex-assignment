@@ -1,4 +1,3 @@
-// Finnhub url building and parsing
 
 import { ProviderError } from "./errors.ts";
 import type { CompanyProfile, Quote } from "./types.ts";
@@ -9,7 +8,7 @@ export function buildFinnhubUrl(path: "quote" | "stock/profile2", symbol: string
   return `${BASE_URL}/${path}?${new URLSearchParams({ symbol, token })}`;
 }
 
-// unlike Alpha Vantage, Finnhub uses real http status codes so we map them straight to our error codes
+// Finnhub uses real http status codes so we map them straight to ours
 export function classifyFinnhubStatus(status: number, body: string): ProviderError | null {
   if (status === 200) return null;
   if (status === 429) return new ProviderError("rate_limited", "Finnhub rate limit reached");

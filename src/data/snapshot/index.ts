@@ -1,6 +1,4 @@
-// loaders for the recorded snapshot files, one per series. each file is only loaded when
-// it's needed. we write every import path out in full so the bundler knows to ship them.
-// to refresh the data run `npm run snapshot`
+// each file only loads when it's needed. the paths are written out in full so the bundler ships them
 
 import type { SnapshotFile } from "@/lib/market/snapshotCodec";
 

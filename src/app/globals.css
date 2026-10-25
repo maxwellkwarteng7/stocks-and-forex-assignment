@@ -127,15 +127,12 @@ body {
   outline-offset: 2px;
 }
 
-
 /* styling all scrollbars so they look thin */
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--axis) transparent;
 }
 
-
-/* d3 axis styling: thin quiet lines and muted numbers that line up */
 .axis path,
 .axis line {
   stroke: var(--axis);
@@ -155,13 +152,12 @@ body {
   display: none;
 }
 
-/* motion curves. ease-out starts fast so it feels instant when the user clicks */
+/* ease-out starts fast so clicks feel instant */
 :root {
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
-/* click feedback for buttons: colour and a slight dim, nothing scales */
 .press {
   transition:
     opacity 120ms ease,
@@ -173,7 +169,7 @@ body {
   opacity: 0.7;
 }
 
-/* sidebar rows: the highlight moves on the same 240ms timing as the selection bar */
+/* same 240ms as the selection bar */
 .row-select {
   transition:
     background-color 240ms var(--ease-out),
@@ -181,7 +177,7 @@ body {
     color 240ms var(--ease-out);
 }
 
-/* popovers just fade. visibility waits for the fade to finish before hiding it */
+/* visibility waits for the fade before hiding */
 .popover {
   transition:
     opacity 150ms var(--ease-out),
@@ -196,7 +192,6 @@ body {
   transition-delay: 0s;
 }
 
-/* rolling digits on the big headline price */
 .roll {
   display: inline-block;
   height: 1em;
@@ -209,7 +204,6 @@ body {
   transition: transform 420ms var(--ease-out);
 }
 
-/* shimmer while a chart is loading */
 .skeleton {
   background: linear-gradient(90deg, var(--surface-2) 25%, var(--grid) 50%, var(--surface-2) 75%);
   background-size: 200% 100%;
@@ -221,7 +215,6 @@ body {
   }
 }
 
-/* a quick green or red flash when a live price moves */
 @keyframes flash-up {
   from {
     background-color: color-mix(in srgb, var(--up) 22%, transparent);
@@ -239,7 +232,6 @@ body {
   animation: flash-down 1.2s ease-out;
 }
 
-/* people who turn on reduced motion in their OS get none of the decorative movement */
 @media (prefers-reduced-motion: reduce) {
   .flash-up,
   .flash-down,
